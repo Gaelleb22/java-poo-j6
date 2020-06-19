@@ -1,8 +1,11 @@
 package fr.diginamic.recensement.services;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
+import fr.diginamic.exemple.exceptions.ClasseException;
 import fr.diginamic.recensement.entites.Recensement;
 import fr.diginamic.recensement.entites.Ville;
 
@@ -16,16 +19,38 @@ import fr.diginamic.recensement.entites.Ville;
 public class RecherchePopulationBorneService extends MenuService {
 
 	@Override
-	public void traiter(Recensement rec, Scanner scanner) {
+	public void traiter(Recensement rec, Scanner scanner) throws ClasseException{
 
 		System.out.println("Quel est le code du dÃ©partement recherchÃ© ? ");
 		String choix = scanner.nextLine();
+		
+		List<Ville> dep = rec.getVilles();
+		Set<String> departement = new HashSet<>();
+		for(Ville ville : dep) {
+			departement.add(ville.getCodeDepartement());
+		}
+		if(!departement.contains(choix)) {
+			throw new ClasseException("Code de département inconnu");
+		}
 
 		System.out.println("Choississez une population minimum (en milliers d'habitants): ");
 		String saisieMin = scanner.nextLine();
+		
+		if (!Character.isDigit(saisieMin.charAt(0))) {
+			throw new ClasseException("Entrer un nombre suppérieur ou égal à 0");
+		}
+		
 
 		System.out.println("Choississez une population maximum (en milliers d'habitants): ");
 		String saisieMax = scanner.nextLine();
+		
+		if (!Character.isDigit(saisieMax.charAt(0))) {
+			throw new ClasseException("Entrer un nombre suppérieur ou égal à 0");
+		}
+	
+		if (Integer.parseInt(saisieMax)<Integer.parseInt(saisieMin)) {
+			throw new ClasseException("Le nombre max ne peut pas être inférieur au min");
+		}
 
 		int min = Integer.parseInt(saisieMin) * 1000;
 		int max = Integer.parseInt(saisieMax) * 1000;
